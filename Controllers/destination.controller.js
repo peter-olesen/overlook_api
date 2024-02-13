@@ -218,6 +218,7 @@ export default class DestinationController {
                       "title",
                       "description",
                       "num_persons",
+                      'slug',
                       "area",
                       "day_price_normal",
                       "day_price_flex",
@@ -297,7 +298,7 @@ export default class DestinationController {
                     include: [
                       {
                         model: RoomFacility,
-                        attributes: ["title"],
+                        attributes: ["filename","title"],
                       },
                       {
                         model: RoomFacility,
