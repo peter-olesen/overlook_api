@@ -1,5 +1,5 @@
-import sequelize from "../Config/sequelize.config.js"
-import { Image } from "../Models/image.model.js"
+import sequelize from "../Config/sequelize.config.js";
+import { Image } from "../Models/image.model.js";
 
 /**
  * Controller foc City Actions
@@ -12,16 +12,18 @@ class ImageController {
    */
   list = async (req, res) => {
     // Destructure Assignment - optional list management
-    let { sortkey, sortdir, limit, attributes } = req.query
+    let { sortkey, sortdir, limit, attributes } = req.query;
     // Sætter array til sort og retning
-    const order = [sortkey ? sortkey : "id"]
-    order.push(sortdir || "ASC")
+    const order = [sortkey ? sortkey : "id"];
+    order.push(sortdir || "ASC");
     // Sætter limit antal
-    limit = parseInt(limit) || 1000
+    limit = parseInt(limit) || 1000;
 
     // Eksekverer sequelize metode med management values
     const result = await Images.findAll({
-      attributes: ['id', 'title', 
+      attributes: [
+        "id",
+        "title",
         [
           sequelize.fn(
             "CONCAT",
@@ -29,14 +31,14 @@ class ImageController {
             sequelize.col("filename")
           ),
           "filename",
-        ]],
+        ],
+      ],
       order: [order],
       limit: limit,
-      
-    })
+    });
     // Udskriver resultat i json format
-    res.json(result)
-  }
+    res.json(result);
+  };
 }
 
-export default ImageController
+export default ImageController;

@@ -1,37 +1,37 @@
-import Country from "../Models/country.model.js"
-import City from "../Models/city.model.js"
-import { Image } from "../Models/image.model.js"
-import Hotel from "../Models/hotel.model.js"
-import HotelRoomsRel from "../Models/hotel-room-rel.model.js"
-import Room from "../Models/room.model.js"
-import RoomFacility from "../Models/room-facility.model.js"
-import RoomFacilityRel from "../Models/room-facility-rel.model.js"
-import RoomImageRel from "../Models/room-image-rel.model.js"
-import HotelFacility from "../Models/hotel-facility.model.js"
-import HotelFacilityRel from "../Models/hotel-facility-rel.model.js"
+import Country from "../Models/country.model.js";
+import City from "../Models/city.model.js";
+import { Image } from "../Models/image.model.js";
+import Hotel from "../Models/hotel.model.js";
+import HotelRoomsRel from "../Models/hotel-room-rel.model.js";
+import Room from "../Models/room.model.js";
+import RoomFacility from "../Models/room-facility.model.js";
+import RoomFacilityRel from "../Models/room-facility-rel.model.js";
+import RoomImageRel from "../Models/room-image-rel.model.js";
+import HotelFacility from "../Models/hotel-facility.model.js";
+import HotelFacilityRel from "../Models/hotel-facility-rel.model.js";
 
 // Definerer relation mellem hotel og image - one to many
-Country.belongsTo(Image, { foreignKey: "image_id", as: "CountryImage" })
-City.belongsTo(Image, { foreignKey: "image_id", as: "CityImage" })
-Hotel.belongsTo(Image, { foreignKey: "image_id", as: "HotelImage" })
+Country.belongsTo(Image, { foreignKey: "image_id", as: "CountryImage" });
+City.belongsTo(Image, { foreignKey: "image_id", as: "CityImage" });
+Hotel.belongsTo(Image, { foreignKey: "image_id", as: "HotelImage" });
 
-City.belongsTo(Country, { foreignKey: "country_id" })
-Country.hasMany(City)
+City.belongsTo(Country, { foreignKey: "country_id" });
+Country.hasMany(City);
 
-City.hasMany(Hotel)
-Hotel.belongsTo(City)
+City.hasMany(Hotel);
+Hotel.belongsTo(City);
 
-Hotel.belongsToMany(Room, { through: HotelRoomsRel })
-Room.belongsToMany(Hotel, { through: HotelRoomsRel })
+Hotel.belongsToMany(Room, { through: HotelRoomsRel });
+Room.belongsToMany(Hotel, { through: HotelRoomsRel });
 
-Hotel.belongsToMany(HotelFacility, { through: HotelFacilityRel })
-HotelFacility.belongsToMany(Hotel, { through: HotelFacilityRel })
+Hotel.belongsToMany(HotelFacility, { through: HotelFacilityRel });
+HotelFacility.belongsToMany(Hotel, { through: HotelFacilityRel });
 
-Room.belongsToMany(RoomFacility, { through: RoomFacilityRel })
-RoomFacility.belongsToMany(Room, { through: RoomFacilityRel })
+Room.belongsToMany(RoomFacility, { through: RoomFacilityRel });
+RoomFacility.belongsToMany(Room, { through: RoomFacilityRel });
 
-Room.belongsToMany(Image, { through: RoomImageRel })
-Image.belongsToMany(Room, { through: RoomImageRel })
+Room.belongsToMany(Image, { through: RoomImageRel });
+Image.belongsToMany(Room, { through: RoomImageRel });
 
 /**
  * Controller foc City Actions
@@ -57,15 +57,15 @@ export default class DestinationController {
             as: "CountryImage",
           },
         ],
-      })
+      });
       // Udskriver resultat i json format
-      res.json(result)
+      res.json(result);
     } catch (err) {
       res.status(418).send({
         message: `Something went wrong: ${err}`,
-      })
+      });
     }
-  }
+  };
 
   /**
    * Method for destination details
@@ -77,14 +77,14 @@ export default class DestinationController {
    */
   details = async (req, res) => {
     // Divides params string into an array
-    const arrParams = req.params.destination.split("/")
+    const arrParams = req.params.destination.split("/");
 
     // Builds queries from array length
     // 1: Country details with city list
     // 2: Country & city details with hotel list
     // 3: Country, city & hotel details with room list
     if (arrParams.length === 1) {
-      const [country] = arrParams
+      const [country] = arrParams;
 
       const result = await Country.findOne({
         attributes: [["id", "country_id"], "slug", "name", "description"],
@@ -111,13 +111,13 @@ export default class DestinationController {
           },
         ],
         where: { slug: country },
-      })
-      return res.json(result)
+      });
+      return res.json(result);
     }
 
     // 2: Country & city details with hotel list
     if (arrParams.length === 2) {
-      const [country, city] = arrParams
+      const [country, city] = arrParams;
 
       const result = await Country.findOne({
         attributes: [["id", "country_id"], "slug", "name", "description"],
@@ -159,13 +159,13 @@ export default class DestinationController {
           },
         ],
         where: { slug: country },
-      })
-      return res.json(result)
+      });
+      return res.json(result);
     }
 
     // 3: Country, city & hotel details with room list
     if (arrParams.length === 3) {
-      const [country, city, hotel] = arrParams
+      const [country, city, hotel] = arrParams;
 
       const result = await Country.findOne({
         attributes: [["id", "country_id"], "slug", "name", "description"],
@@ -218,10 +218,13 @@ export default class DestinationController {
                       "title",
                       "description",
                       "num_persons",
-                      'slug',
+                      "slug",
                       "area",
                       "day_price_normal",
                       "day_price_flex",
+                    ],
+                    include: [
+                      { model: Image, attributes: ["filename", "title"] },
                     ],
                   },
                 ],
@@ -232,13 +235,13 @@ export default class DestinationController {
           },
         ],
         where: { slug: country },
-      })
-      return res.json(result)
+      });
+      return res.json(result);
     }
 
     // 4: Country, city, hotel and room details
     if (arrParams.length === 4) {
-      const [country, city, hotel, room] = arrParams
+      const [country, city, hotel, room] = arrParams;
 
       const result = await Country.findOne({
         attributes: [["id", "country_id"], "slug", "name", "description"],
@@ -297,8 +300,8 @@ export default class DestinationController {
                     ],
                     include: [
                       {
-                        model: RoomFacility,
-                        attributes: ["filename","title"],
+                        model: Image,
+                        attributes: ["filename", "title"],
                       },
                       {
                         model: RoomFacility,
@@ -315,8 +318,8 @@ export default class DestinationController {
           },
         ],
         where: { slug: country },
-      })
-      return res.json(result)
+      });
+      return res.json(result);
     }
-  }
+  };
 }
